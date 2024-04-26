@@ -1,2 +1,0 @@
-# MovieDatabase
-A movie database

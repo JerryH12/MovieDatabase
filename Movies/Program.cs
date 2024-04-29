@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Movies.Data;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MoviesContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString") ?? throw new InvalidOperationException("Connection string 'MoviesContext' not found.")));
 
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MoviesContext>();
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(
+        options => {
+            options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedEmail = false;
+
+            //Other options go here
+        }
+        )
+    .AddEntityFrameworkStores<MoviesContext>()
+    .AddDefaultUI();
+
+builder.Services.AddRazorPages();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -27,10 +41,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapRazorPages();
 app.Run();

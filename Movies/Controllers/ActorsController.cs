@@ -46,19 +46,66 @@ namespace Movies.Controllers
         // GET: Actors/Create
         public IActionResult Create()
         {
+            //ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Title");
+            PopulateMovieData();
             return View();
         }
+
+        /*
+        private void PopulateCoursesData()
+{
+        var CoursesData = db.usrCourses;
+        var viewModel = new List<AssignedCourseData>();
+        foreach (var item in CoursesData)
+        {
+            viewModel.Add(new AssignedCourseData {
+                CourseID = item.CourseID,
+                CourseDescription  = item.CourseDescription,
+                Assigned = false });
+        }
+        ViewBag.CoursePopulate = viewModel;
+}
+         */
+
+        private void PopulateMovieData()
+        {
+            var MovieData = _context.Movies;
+            var viewModel = new List<MovieDetailsViewModel>();
+            foreach(var item in MovieData)
+            {
+                viewModel.Add(new MovieDetailsViewModel
+                {
+                    MovieId = item.Id,
+                    Title = item.Title,
+                });
+            }
+            ViewBag.MoviePopulate = viewModel;
+        }
+
 
         // POST: Actors/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create([Bind("FirstName,LastName")] Actor actor)
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName")] Actor actor)
+        public async Task<IActionResult> Create(Actor actor, string[] selectedMovie)
         {
             if (ModelState.IsValid)
             {
+
+                _context.Attach(actor);
                 _context.Add(actor);
+              
+
+                foreach (var movieId in selectedMovie)
+                {
+                    var movie = _context.Movies.Find(int.Parse(movieId));
+                    actor.Movies.Add(movie);
+                }
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

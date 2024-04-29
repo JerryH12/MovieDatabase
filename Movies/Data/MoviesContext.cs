@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Movies.Data
 {
-    public class MoviesContext : DbContext
+    public class MoviesContext : IdentityDbContext
     {
         public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)  
         { }
 
         public DbSet<Actor> Actors { get; set; }
-        public DbSet<FilmCrew> FilmCrew {  get; set; }
         public DbSet<Genre> Genre { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Price> Price { get; set; }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +27,25 @@ namespace Movies.Controllers
             return View(await _context.Movies.ToListAsync());
         }
 
+        private void PopulateActorData()
+        {
+            var ActorData = _context.Actors;
+                          
+            var viewModel = new List<MovieDetailsViewModel>();
+            foreach (var item in ActorData)
+            {
+                viewModel.Add(new MovieDetailsViewModel
+                {
+                   // ActorId = item.Id,
+                   // Title = item.Title,
+                   
+                });
+
+                
+            }
+            ViewBag.MoviePopulate = viewModel;
+        }
+
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,6 +67,7 @@ namespace Movies.Controllers
         // GET: Movies/Create
         public IActionResult Create()
         {
+           
             return View();
         }
 
@@ -54,13 +76,29 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ReleaseDate")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Title,Director,Description,ReleaseDate")] Movie movie)
         {
+            //MovieDetailsViewModel viewModel = new MovieDetailsViewModel();
+
+            // Test
+        /*    Actor actor = new Actor();
+            actor.FirstName = "Ingrid";
+            actor.LastName = "Bergman";*/
+
+           // movie.Actors.Add(actor);
+
             if (ModelState.IsValid)
             {
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                // Only for testing. Remove later.
+                var errors = ModelState.Select(x => x.Value.Errors)
+                               .Where(y => y.Count > 0)
+                               .ToList();
             }
             return View(movie);
         }

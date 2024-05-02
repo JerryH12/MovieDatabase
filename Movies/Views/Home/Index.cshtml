@@ -1,9 +1,40 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Html
+@model IEnumerable<Movies.Models.Movie>
+
+@{
+    ViewData["Title"] = "Movie Database";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <a asp-controller="Movies">Movies</a>
+<form class="text-end" method="post" asp-controller="Home"  asp-action="SearchByTitle">
+    <input minlength="3" value="" type="text" id="word" name="word"/>
    
+    <input type="submit" class="btn btn-primary" value="Search" />
+</form>
+<div class="mt-5">
+   
+    
+    <div class="table-responsive">
+      <table class="table">
+          <tbody>
+              <tr>
+                    @{        
+                        var tr = new HtmlString("<tr>");
+                        var trclose = new HtmlString("</tr>");
+                    
+                        int counter = 0;
+                   
+                        foreach (var item in Model) {
+
+                            <td>@item.Title</td>
+                            counter++;
+                            if(counter % 4 == 0) {
+                               @trclose
+                               @tr
+                            }   
+                        }          
+                  }
+              </tr>
+          </tbody>
+      </table>
+    </div>
 </div>

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rBTl5DXyCwFQ6KvnZhO66jRg61Z5R/JAXXLIQA9KRdy8eQMvS5eVRbL1V4if9/zceV+tgcHQzRqqLCz3yCAWwg==",
+  "dgSpecHash": "ATtL5BpVOke2RDCVr/4o0mP+lJCZuPTHTqnc8YuphuvWN+4CPWg98tS79KKIRfwAysJ/id19aYNH6EvbGru85A==",
   "success": true,
   "projectFilePath": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\Movies.csproj",
   "expectedPackageFiles": [
@@ -69,6 +69,8 @@
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\8.0.4\\microsoft.aspnetcore.identity.entityframeworkcore.8.0.4.nupkg.sha512",
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.identity.ui\\8.0.4\\microsoft.aspnetcore.identity.ui.8.0.4.nupkg.sha512",
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.metadata\\8.0.4\\microsoft.aspnetcore.metadata.8.0.4.nupkg.sha512",
+    "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.mvc.razor.extensions\\6.0.0\\microsoft.aspnetcore.mvc.razor.extensions.6.0.0.nupkg.sha512",
+    "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.mvc.razor.runtimecompilation\\8.0.4\\microsoft.aspnetcore.mvc.razor.runtimecompilation.8.0.4.nupkg.sha512",
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.24\\microsoft.aspnetcore.razor.language.6.0.24.nupkg.sha512",
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\jerry\\.nuget\\packages\\microsoft.build\\17.8.3\\microsoft.build.17.8.3.nupkg.sha512",

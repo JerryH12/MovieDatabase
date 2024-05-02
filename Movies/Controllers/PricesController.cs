@@ -49,24 +49,40 @@ namespace Movies.Controllers
         public IActionResult Create()
         {
             ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Id");
-            return View();
+            PriceViewModel model = new PriceViewModel();
+            //model.Amount = 100;
+           // model.MovieId = 1;
+          
+            return View(model);
         }
 
         // POST: Prices/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("Id,Amount,MovieId")] Price price)
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,MovieId")] Price price)
+        public async Task<IActionResult> Create(PriceViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Price price = new Price()
+                {
+                    Amount = model.Amount,
+                    MovieId = model.MovieId
+                };
+
                 _context.Add(price);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Id", price.MovieId);
-            return View(price);
+            ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Id", model.MovieId);
+            return View(model);
         }
 
         // GET: Prices/Edit/5

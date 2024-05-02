@@ -22,7 +22,7 @@ namespace Movies.Controllers
         // GET: Actors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Actors.ToListAsync());
+            return View(await _context.Actors.OrderBy(a => a.LastName).ToListAsync());
         }
 
         // GET: Actors/Details/5

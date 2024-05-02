@@ -30,6 +30,21 @@
         </dd>
     </dl>
 </div>
+
+<h4>Actors</h4>
+<ul>
+    @{
+        
+        foreach(var item in Model.Actors)
+        {
+            <li>
+                @item.FirstName
+                &nbsp;
+                @item.LastName
+            </li>
+        }
+    }
+</ul>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

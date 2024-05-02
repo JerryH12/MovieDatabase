@@ -18,8 +18,7 @@
         public DateTime ReleaseDate { get; set; }
 
         public string GenreName { get; set; }
-        public string ActorFirstName { get; set; }
-        public string ActorLastName { get; set; }
+       
         public double PriceAmount { get; set; }
         
         

@@ -27,23 +27,34 @@ namespace Movies.Controllers
             return View(await _context.Movies.ToListAsync());
         }
 
-        private void PopulateActorData()
+        private void PopulateActorData(int? movieId)
         {
-            var ActorData = _context.Actors;
-                          
-            var viewModel = new List<MovieDetailsViewModel>();
+            /* var ActorData = from actor in _context.Actors
+                             join movie in _context.Movies
+                             on actor.Id equals movie.Id
+                             where movie.Id == movieId
+                             select actor;*/
+
+            var ActorData = _context.Actors
+                .Include(m => m.Movies)
+                .ThenInclude(m => m.Actors);
+               
+                            
+            var viewModel = new List<ActorDetailsViewModel>();
+
             foreach (var item in ActorData)
             {
-                viewModel.Add(new MovieDetailsViewModel
+                viewModel.Add(new ActorDetailsViewModel
                 {
-                   // ActorId = item.Id,
-                   // Title = item.Title,
+                    ActorId = item.Id,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName
                    
                 });
 
                 
             }
-            ViewBag.MoviePopulate = viewModel;
+            ViewBag.ActorPopulate = viewModel;
         }
 
         // GET: Movies/Details/5
@@ -54,8 +65,12 @@ namespace Movies.Controllers
                 return NotFound();
             }
 
+           // PopulateActorData(id);
+
             var movie = await _context.Movies
+                .Include(m => m.Actors)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (movie == null)
             {
                 return NotFound();
@@ -124,7 +139,7 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,ReleaseDate")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Director,Description,ReleaseDate")] Movie movie)
         {
             if (id != movie.Id)
             {

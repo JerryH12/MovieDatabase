@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Identity;
 
 namespace Movies.Data
 {
@@ -29,6 +31,15 @@ namespace Movies.Data
                 string connString = config.GetConnectionString("MoviesConnectionString");
                 optionsBuilder.UseSqlServer(connString); //Or whatever DB you are using
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Movie>()
+                .Property(m => m.ImageFile)
+                .IsRequired(false);
+                
         }
     }
 }

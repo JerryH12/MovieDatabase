@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace Movies.Controllers
         }
 
         // GET: Prices
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var moviesContext = _context.Price.Include(p => p.Movie);
@@ -27,6 +29,7 @@ namespace Movies.Controllers
         }
 
         // GET: Prices/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +49,7 @@ namespace Movies.Controllers
         }
 
         // GET: Prices/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Id");
@@ -67,6 +71,7 @@ namespace Movies.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PriceViewModel model)
         {
             if (ModelState.IsValid)
@@ -86,6 +91,7 @@ namespace Movies.Controllers
         }
 
         // GET: Prices/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,6 +113,7 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,MovieId")] Price price)
         {
             if (id != price.Id)
@@ -139,6 +146,7 @@ namespace Movies.Controllers
         }
 
         // GET: Prices/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -160,6 +168,7 @@ namespace Movies.Controllers
         // POST: Prices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var price = await _context.Price.FindAsync(id);
@@ -172,6 +181,7 @@ namespace Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         private bool PriceExists(int id)
         {
             return _context.Price.Any(e => e.Id == id);

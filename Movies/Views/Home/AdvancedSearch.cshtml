@@ -1,0 +1,49 @@
+﻿
+@model IEnumerable<Movies.Models.Movie>
+
+@{
+    ViewData["Title"] = "Advanced Search";
+
+
+}
+
+
+<div class="row">
+    <div class="col-8">
+        <ul>
+            @{
+                if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        <li>
+                            <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id">@item.Title</a>
+                        </li>
+                    }
+                }
+            }
+       </ul>
+    </div>
+    <div class="col-4">
+        <h4>Search with keywords and filters</h4>
+<form method="post" asp-controller="Home" asp-action="AdvancedSearch">
+   
+    <div class="form-group">
+        <label name="title" class="control-label">Title:</label>
+        <input minlength="3" class="form-control" value="" type="text" id="title" name="title" />
+     </div>
+      <div class="form-group">
+        <label name="genre" class="control-label">Genre:</label>
+        <input minlength="3" class="form-control" value="" type="text" id="genre" name="genre" />
+     </div>
+      <div class="form-group">
+        <label name="director" class="control-label">Director:</label>
+        <input minlength="3" class="form-control" value="Ingmar Bergman" type="text" id="director" name="director" />
+     </div>
+     <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Search" />
+    </div>
+</form>
+    </div>
+</div>
+

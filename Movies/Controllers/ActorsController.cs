@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,14 @@ namespace Movies.Controllers
         }
 
         // GET: Actors
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Actors.OrderBy(a => a.LastName).ToListAsync());
         }
 
         // GET: Actors/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,6 +47,7 @@ namespace Movies.Controllers
         }
 
         // GET: Actors/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             //ViewData["MovieId"] = new SelectList(_context.Movies, "Id", "Title");
@@ -51,25 +55,11 @@ namespace Movies.Controllers
             return View();
         }
 
-        /*
-        private void PopulateCoursesData()
-{
-        var CoursesData = db.usrCourses;
-        var viewModel = new List<AssignedCourseData>();
-        foreach (var item in CoursesData)
-        {
-            viewModel.Add(new AssignedCourseData {
-                CourseID = item.CourseID,
-                CourseDescription  = item.CourseDescription,
-                Assigned = false });
-        }
-        ViewBag.CoursePopulate = viewModel;
-}
-         */
-
+        [Authorize(Roles = "Admin")]
         private void PopulateMovieData()
         {
-            var MovieData = _context.Movies;
+            var MovieData = _context.Movies
+                             .Include(m => m.Actors);
             var viewModel = new List<MovieDetailsViewModel>();
             foreach(var item in MovieData)
             {
@@ -77,6 +67,7 @@ namespace Movies.Controllers
                 {
                     MovieId = item.Id,
                     Title = item.Title,
+                    Actors = item.Actors
                 });
             }
             ViewBag.MoviePopulate = viewModel;
@@ -92,6 +83,7 @@ namespace Movies.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(Actor actor, string[] selectedMovie)
         {
             if (ModelState.IsValid)
@@ -113,6 +105,7 @@ namespace Movies.Controllers
         }
 
         // GET: Actors/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -120,11 +113,16 @@ namespace Movies.Controllers
                 return NotFound();
             }
 
-            var actor = await _context.Actors.FindAsync(id);
+            //var actor = await _context.Actors.FindAsync(id);
+            var actor = _context.Actors.Include(a=>a.Movies)
+                                       .FirstOrDefault(a => a.Id == id);
             if (actor == null)
             {
                 return NotFound();
             }
+
+            PopulateMovieData();
+         
             return View(actor);
         }
 
@@ -133,7 +131,8 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName")] Actor actor)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, string[] selectedMovie, [Bind("Id,FirstName,LastName")] Actor actor)
         {
             if (id != actor.Id)
             {
@@ -144,8 +143,45 @@ namespace Movies.Controllers
             {
                 try
                 {
+                   // _context.Attach(actor);
                     _context.Update(actor);
-                    await _context.SaveChangesAsync();
+
+
+                    /*
+                     * // Retrieve the entities
+                        var entity1 = context.Entity1s.Include(e => e.Entity2s).FirstOrDefault(e => e.Id == entity1Id);
+                        var entity2 = context.Entity2s.Include(e => e.Entity1s).FirstOrDefault(e => e.Id == entity2Id);
+
+                        if (entity1 != null && entity2 != null)
+                        {
+                            // Remove the relationship
+                            entity1.Entity2s.Remove(entity2);
+                            entity2.Entity1s.Remove(entity1);
+
+                            // Save changes
+                            context.SaveChanges();
+                        }
+                     */
+
+                    var entities = _context.Actors.Include(a => a.Movies).FirstOrDefault(a => a.Id == id);
+                   // var entities2 = _context.Movies.Include(m => m.Actors).FirstOrDefault(m => m.Id == movie.Id);
+
+                    foreach (var movie in entities.Movies)
+                    {
+                       movie.Actors.Remove(actor);
+                    }
+
+                    entities.Movies.Clear();
+                    _context.SaveChanges();
+
+                    foreach (var movieId in selectedMovie)
+                    {
+                        var movie = _context.Movies.Find(int.Parse(movieId));  
+                        entities.Movies.Add(movie);
+                    }
+     
+                  _context.SaveChanges();
+                  
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -164,6 +200,7 @@ namespace Movies.Controllers
         }
 
         // GET: Actors/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -184,6 +221,7 @@ namespace Movies.Controllers
         // POST: Actors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var actor = await _context.Actors.FindAsync(id);
@@ -196,6 +234,7 @@ namespace Movies.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         private bool ActorExists(int id)
         {
             return _context.Actors.Any(e => e.Id == id);

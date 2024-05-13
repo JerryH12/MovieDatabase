@@ -2,31 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Movies.Data;
 using Movies.Models;
+using Movies.Repository;
 
 namespace Movies.Controllers
 {
     public class MoviesController : Controller
     {
         private readonly MoviesContext _context;
+       // private readonly IMovieRepository _repository;
 
         public MoviesController(MoviesContext context)
         {
+            //_repository = new MovieRepository(context);
             _context = context;
         }
 
         // GET: Movies
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
+            //return View(await _repository.GetAll().ToListAsync());
             return View(await _context.Movies.ToListAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         private void PopulateActorData(int? movieId)
         {
             /* var ActorData = from actor in _context.Actors
@@ -58,6 +67,7 @@ namespace Movies.Controllers
         }
 
         // GET: Movies/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -79,7 +89,20 @@ namespace Movies.Controllers
             return View(movie);
         }
 
+        private byte?[] ConvertToNullableBytes(byte[] nonNullableBytes)
+        {     
+            byte?[] nullableBytes = new byte?[nonNullableBytes.Length];
+
+            for (int i = 0; i < nonNullableBytes.Length; i++)
+            {
+                nullableBytes[i] = nonNullableBytes[i];
+            }
+            return nullableBytes;
+        }
+
         // GET: Movies/Create
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
            
@@ -91,20 +114,26 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Director,Description,ReleaseDate")] Movie movie)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(IFormFile ImageFile, [Bind("Title,Exclude=ImageFile,Director,Description,ReleaseDate")] Movie movie)
         {
-            //MovieDetailsViewModel viewModel = new MovieDetailsViewModel();
-
-            // Test
-        /*    Actor actor = new Actor();
-            actor.FirstName = "Ingrid";
-            actor.LastName = "Bergman";*/
-
-           // movie.Actors.Add(actor);
-
             if (ModelState.IsValid)
-            {
-                _context.Add(movie);
+            {     
+                using (var memoryStream = new MemoryStream())
+                {
+                    await ImageFile.CopyToAsync(memoryStream);
+
+                    if (memoryStream.Length < 2097152)
+                    {
+                        movie.ImageFile = memoryStream.ToArray();
+                        //movie.ImageFile = ConvertToNullableBytes(memoryStream.ToArray());
+
+
+                        
+                    }
+                }
+               
+                    _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -119,6 +148,7 @@ namespace Movies.Controllers
         }
 
         // GET: Movies/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -139,17 +169,33 @@ namespace Movies.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Director,Description,ReleaseDate")] Movie movie)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, IFormFile file, [Bind("Id,Title,Director,Description,ReleaseDate")] Movie movie)
         {
             if (id != movie.Id)
             {
                 return NotFound();
             }
 
+            // TODO: Edit without uploading any file.
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (file != null)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(memoryStream);
+
+                            if (memoryStream.Length < 2097152)
+                            {
+                                movie.ImageFile = memoryStream.ToArray();
+                               // movie.ImageFile = ConvertToNullableBytes(memoryStream.ToArray());
+                            }
+                        }
+                    }
+
                     _context.Update(movie);
                     await _context.SaveChangesAsync();
                 }
@@ -170,6 +216,7 @@ namespace Movies.Controllers
         }
 
         // GET: Movies/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -190,6 +237,7 @@ namespace Movies.Controllers
         // POST: Movies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
@@ -200,6 +248,47 @@ namespace Movies.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        /*
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UploadFile(IFormFile file)
+        {
+            if (ModelState.IsValid)
+            {
+                if (file != null)
+                {
+                    string uploads = Path.Combine(Environment.CurrentDirectory, "wwwroot/images");
+                    if (file.Length > 0)
+                    {
+                        string filePath = Path.Combine(uploads, file.FileName);
+                        using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+                    }
+                }
+            }
+            return View("Create");
+        }*/
+
+      
+        public async Task<ActionResult> MovieInfo(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var movie = await _context.Movies
+               .Include(m => m.Actors)
+               .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            return View("MovieInfo", movie);
         }
 
         private bool MovieExists(int id)

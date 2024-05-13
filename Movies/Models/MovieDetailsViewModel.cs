@@ -1,4 +1,6 @@
-﻿namespace Movies.Models
+﻿using System.Reflection;
+
+namespace Movies.Models
 {
     public class MovieDetailsViewModel
     {
@@ -13,7 +15,8 @@
         public string Title { get; set; }
 
         public string Description { get; set; }
-        public string Director { get; set; }    
+        public string Director { get; set; } 
+        public byte[] ImageFile { get; set; }
 
         public DateTime ReleaseDate { get; set; }
 
@@ -21,6 +24,6 @@
        
         public double PriceAmount { get; set; }
         
-        
+        public List<Actor> Actors { get; set; }
     }
 }

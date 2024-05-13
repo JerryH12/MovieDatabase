@@ -1,20 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Html
+
 @model IEnumerable<Movies.Models.Movie>
 
 @{
     ViewData["Title"] = "Movie Database";
+    int pageNumber = ViewBag.PageNumber == null ? 0 : Int32.Parse(ViewBag.PageNumber.ToString());
 }
 
-<form class="text-end" method="post" asp-controller="Home"  asp-action="SearchByTitle">
-    <input minlength="3" value="" type="text" id="word" name="word"/>
-   
+<form class="d-flex justify-content-end" method="post" asp-controller="Home" asp-action="SearchByTitle">
+    <input minlength="3" value="" type="text" id="word" name="word" />
+
     <input type="submit" class="btn btn-primary" value="Search" />
-</form>
-<div class="mt-5">
-   
     
-    <div class="table-responsive">
-      <table class="table">
+</form>
+
+<div class="d-flex justify-content-end">
+    <a asp-controller="Home" asp-action="AdvancedSearchPage">Advanced search</a>
+</div>
+@await Component.InvokeAsync("Pagination", new { page = pageNumber })
+
+<div class="table-responsive">
+      <table class="table w-75 mx-auto">
           <tbody>
               <tr>
                     @{        
@@ -22,19 +28,50 @@
                         var trclose = new HtmlString("</tr>");
                     
                         int counter = 0;
-                   
+                           
                         foreach (var item in Model) {
 
-                            <td>@item.Title</td>
+                            <td class="align-bottom w-25">
+                            
+                                @if(item.ImageFile.Count() > 0)
+                                {
+                                    <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id"><img class="img-fluid" src="data:image/jpeg;base64,@(Convert.ToBase64String(item.ImageFile))"></a> 
+                            }
+                            else
+                            {
+                                <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id"><img class="img-fluid" src="~/images/no-picture.png"></a>
+                            }
+                            
+                                <p>
+                                <h6> <a class="text-decoration-none link-dark" asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id">@item.Title</a></h6>
+                                </p>
+                             </td>
                             counter++;
                             if(counter % 4 == 0) {
                                @trclose
-                               @tr
-                            }   
-                        }          
-                  }
-              </tr>
+                            @tr
+                        }   
+                    }
+                }
+            </tr>
           </tbody>
       </table>
     </div>
+    <div>
+        @*
+    <img style="width: 8%; height: 8%; float: right; position: relative; top: -150px; opacity: 0.5;" src="~/images/movies.png" alt="movies" />
+    *@
+<ul class="pagination d-flex justify-content-center">
+
+    @*
+        <li class="page-item"><a class="page-link" asp-action="GetMoviesPerPage" asp-route-page="@(ViewBag.PageNumber-1)">Previous</a></li>
+    *@
+
+        @await Component.InvokeAsync("Pagination", new { page = pageNumber })
+
+    @*
+        <li class="page-item"><a class="page-link" asp-route-page="@(ViewBag.PageNumber+1)">Next</a></li>
+    *@
+</ul>
 </div>
+

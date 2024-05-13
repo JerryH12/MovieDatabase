@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MoviesContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString") ?? throw new InvalidOperationException("Connection string 'MoviesContext' not found.")));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MoviesContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//.AddEntityFrameworkStores<MoviesContext>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(
         options => {
@@ -18,6 +19,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(
             //Other options go here
         }
         )
+     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MoviesContext>()
     .AddDefaultUI();
 
@@ -50,4 +52,10 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGet("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+    endpoints.MapPost("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+});
 app.Run();

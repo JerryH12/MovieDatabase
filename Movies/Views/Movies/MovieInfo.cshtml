@@ -1,0 +1,25 @@
+﻿
+@{
+    @model Movies.Models.Movie
+}
+
+<div class="row">
+    <div class="col">
+        <h3>@Model.Title</h3>
+        <p>@Model.Description</p>
+        <h5>Director</h5>
+        <p>@Model.Director</p>
+        <h5>Cast</h5>
+        <ul>
+        @foreach(var actor in @Model.Actors) {
+            <li>@actor.FirstName&nbsp;@actor.LastName</li>
+        }
+        </ul>
+    </div>
+    <div class="col">
+        @if (Model.ImageFile.Length > 0)
+        {
+            <img class="w-25" src="data:image/jpeg;base64,@(Convert.ToBase64String(@Model.ImageFile))">
+        }
+    </div>
+</div>

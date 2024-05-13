@@ -1,4 +1,6 @@
-﻿@model Movies.Models.Actor
+﻿@using Microsoft.AspNetCore.Html
+
+@model Movies.Models.Actor
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,17 +14,57 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <h5>Movies with this actor</h5>
+                    @{
+
+                        List<Movies.Models.MovieDetailsViewModel> movies = ViewBag.MoviePopulate;
+
+
+                        foreach (var movie in movies)
+                        {
+                            var check = "";
+                           @*
+                            foreach(Actor actor in movie.Actors)
+                            {
+                                if(actor.Id == Model.Id)
+                                {
+                                    check = "checked";
+                                }
+                              
+                            }
+                            *@
+                            if(Model.Movies.Any(m => m.Id.Equals(movie.MovieId)))
+                            {
+                                check = "checked";
+                            }
+
+
+                            <div class="form-group">
+                                <input type="checkbox" @check name="selectedMovie" value="@movie.MovieId" />
+                                @movie.Title
+                            </div>
+                        }
+                    }
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -13,6 +13,42 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\4401280.jpg",
+      "PackagePath": "staticwebassets\\images\\4401280.jpg"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\Cat_People_(1942_poster).jpg",
+      "PackagePath": "staticwebassets\\images\\Cat_People_(1942_poster).jpg"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\Egg!_Egg!_A_Hardboiled_Story.jpg",
+      "PackagePath": "staticwebassets\\images\\Egg!_Egg!_A_Hardboiled_Story.jpg"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\Original_Rocky_Horror_Picture_Show_poster.jpg",
+      "PackagePath": "staticwebassets\\images\\Original_Rocky_Horror_Picture_Show_poster.jpg"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\Rocky_IV.jpg",
+      "PackagePath": "staticwebassets\\images\\Rocky_IV.jpg"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\gradient.png",
+      "PackagePath": "staticwebassets\\images\\gradient.png"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\movies.png",
+      "PackagePath": "staticwebassets\\images\\movies.png"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\movies2.png",
+      "PackagePath": "staticwebassets\\images\\movies2.png"
+    },
+    {
+      "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\images\\no-picture.png",
+      "PackagePath": "staticwebassets\\images\\no-picture.png"
+    },
+    {
       "Id": "C:\\Users\\jerry\\source\\repos\\Movies\\Movies\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

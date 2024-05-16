@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Movies.Models.Movie>
+﻿@model IEnumerable<Movies.Models.MovieDetailsViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -15,16 +15,14 @@
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.Director)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.ReleaseDate)
             </th>
-            <th></th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
     <tbody>
@@ -34,15 +32,16 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Director)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
+                
+                    @Html.Raw(item.ReleaseDate.Date.ToString("yyyy-MM-dd"))
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.MovieId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MovieId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MovieId">Delete</a>
             </td>
         </tr>
 }

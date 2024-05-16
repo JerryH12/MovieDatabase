@@ -12,7 +12,7 @@ namespace Movies.Models
 
         [ValidateNever]
         [AllowNull]
-        public byte[] ImageFile { get; set; }
+        public byte[]? ImageFile { get; set; }
 
         public string Description { get; set; }
 

@@ -19,11 +19,11 @@ namespace Movies.Models
         public byte[] ImageFile { get; set; }
 
         public DateTime ReleaseDate { get; set; }
-
-        public string GenreName { get; set; }
        
         public double PriceAmount { get; set; }
         
         public List<Actor> Actors { get; set; }
+
+        public List<Genre> Genres { get; set; }
     }
 }

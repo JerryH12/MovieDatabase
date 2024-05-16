@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Movies.Data;
 using Movies.Models;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Movies.Controllers
@@ -30,10 +31,12 @@ namespace Movies.Controllers
 
             var queryPageResult = _context.Movies
             .Skip(numberOfObjectsPerPage * pageNumber)
-            .Take(numberOfObjectsPerPage);
+            .Take(numberOfObjectsPerPage)
+            .ToList();
 
-          
-            return View(await queryPageResult.ToListAsync());
+            var viewModel = PopulateMovieData(queryPageResult);
+
+            return View(viewModel);
 
 
             //return View(await _context.Movies.ToListAsync());
@@ -41,24 +44,61 @@ namespace Movies.Controllers
 
         public async Task<IActionResult> AdvancedSearchPage()
         {
-           
-
-            return View("AdvancedSearch", await _context.Movies.ToListAsync());
+            //var model = _context.Movies.Include(m => m.Genres).Take(10);
+            PopulateGenreData();
+            return View("AdvancedSearch");
         }
 
         [HttpPost]
-        public IActionResult AdvancedSearch(string title, string genre, string director)
+        public IActionResult AdvancedSearch(string title, string genre, string director, string[] selectedGenres)
         {
-            if(director != null)
+            List<Movie> model = null;
+            
+            if (title != null && director != null)
             {
-                //var model = _context.Movies.Where(m => m.Director.ToLower().Contains(director.ToLower()));
+               /* model = (from m in _context.Movies    
+                             where m.Director.ToLower().Contains(director.ToLower())
+                                && m.Title.ToLower().Contains(title.ToLower())
+                                select m);*/
 
-                var model = from x in _context.Movies
-                            where x.Director.ToLower().Contains(director.ToLower())
-                            select x;
-                return View(model);
+                model = _context.Movies.Include(m=>m.Genres)
+                                        .Where(m => m.Director.ToLower().Contains(director.ToLower()))
+                                        .Where(m => m.Title.ToLower().Contains(m.Title.ToLower())).ToList();  
+                
+               
             }
-            return View();
+            else if(title != null)
+            {
+                model = _context.Movies.Include(m => m.Genres)
+                                   .Where(m=>m.Title.ToLower().Contains(title.ToLower())).ToList();
+            }
+            else if(director != null) 
+            {
+                model = _context.Movies.Include(m => m.Genres)
+                                   .Where(m=>m.Director.ToLower().Contains(director.ToLower())).ToList();
+            }
+
+            PopulateGenreData();
+
+            if (selectedGenres.Count() > 0 && model != null)
+            {
+                List<Movie> filteredModel = new List<Movie>();
+
+                foreach (var movie in model)
+                {
+                    foreach (var gen in movie.Genres)
+                    {
+                        if (selectedGenres.Any(x => x.Equals(gen.Name)))
+                        {
+                            filteredModel.Add(movie);
+                        }
+                    }
+                }
+
+                return View(filteredModel);
+            }
+           
+            return View(model);
         }
 
         public IActionResult Privacy()
@@ -80,10 +120,13 @@ namespace Movies.Controllers
                 return NotFound();
             }
 
-            var model = from x in _context.Movies
-                         where x.Title.ToLower().Contains(word.ToLower())
-                         select x;
-            return View("index", model);
+            var model = from m in _context.Movies
+                         where m.Title.ToLower().Contains(word.ToLower())
+                         select m;
+
+            var viewModel = PopulateMovieData(model.ToList());
+
+            return View("index", viewModel);
         }
 
         public async Task<ActionResult> GetMoviesPerPage(int page = 0)
@@ -106,12 +149,64 @@ namespace Movies.Controllers
 
             ViewBag.Page = page;
 
-            return View("Index", await queryPageResult.ToListAsync());
+            var viewModel = PopulateMovieData(queryPageResult.ToList());
+
+            return View("Index", viewModel);
         }
 
         public int GetTotalNumberOfMovies()
         {
             return _context.Movies.Count();
+        }
+
+        private byte[] ConvertToNonNullableBytes(byte?[] nullableBytes)
+        {
+            byte[] nonNullableBytes = new byte[nullableBytes.Length];
+
+            for (int i = 0; i < nullableBytes.Length; i++)
+            {
+                nonNullableBytes[i] = (byte)nullableBytes[i];
+            }
+            return nonNullableBytes;
+        }
+
+        private void PopulateGenreData()
+        {
+            var genreData = _context.Genre
+                .Include(m => m.Movies);
+
+            var viewModel = new List<GenreDetailsViewModel>();
+
+            foreach (var item in genreData)
+            {
+                viewModel.Add(new GenreDetailsViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Movies = item.Movies
+                });
+            }
+            ViewBag.GenrePopulate = viewModel;
+        }
+
+        private List<MovieDetailsViewModel> PopulateMovieData(List<Movie> queryResult)
+        {
+            var viewModel = new List<MovieDetailsViewModel>();
+
+            foreach (var item in queryResult)
+            {
+                viewModel.Add(new MovieDetailsViewModel
+                {
+                    MovieId = item.Id,
+                    Title = item.Title,
+                    Description = item.Description,
+                    ReleaseDate = item.ReleaseDate,
+                    Director = item.Director,
+                    Actors = item.Actors,
+                    ImageFile = item.ImageFile
+                });
+            }
+            return viewModel;
         }
     }
 }

@@ -12,7 +12,18 @@ namespace Movies.Models
         {
             _context = context;
         }
-        
+
+        private byte[] ConvertToNonNullableBytes(byte?[] nullableBytes)
+        {
+            byte[] nonNullableBytes = new byte[nullableBytes.Length];
+
+            for (int i = 0; i < nullableBytes.Length; i++)
+            {
+                nonNullableBytes[i] = (byte)nullableBytes[i];
+            }
+            return nonNullableBytes;
+        }
+
         [HttpPost]
         public async Task<IViewComponentResult> InvokeAsync(int page = 0)
         {
@@ -34,7 +45,26 @@ namespace Movies.Models
 
             ViewBag.Page = page;
 
-            return View(await queryPageResult.ToListAsync());
+            var viewModel = new List<MovieDetailsViewModel>();
+
+            foreach (var item in queryPageResult)
+            {
+                viewModel.Add(new MovieDetailsViewModel
+                {
+                    MovieId = item.Id,
+                    Description = item.Description,
+                    ReleaseDate = item.ReleaseDate,
+                    Director = item.Director,
+                    Actors = item.Actors,
+                    ImageFile = item.ImageFile
+
+
+
+                });
+
+
+            }
+            return View(viewModel);
         }
     }
 }

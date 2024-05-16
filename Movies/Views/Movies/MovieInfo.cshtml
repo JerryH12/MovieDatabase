@@ -1,14 +1,19 @@
 ﻿
-@{
-    @model Movies.Models.Movie
-}
 
+   @* @model Movies.Models.Movie *@
+   @model Movies.Models.MovieDetailsViewModel
+
+<a class="close float-end" aria-label="Close" asp-controller="Home" asp-action="Index">
+    <span aria-hidden="true">&times;</span>
+</a>
 <div class="row">
     <div class="col">
         <h3>@Model.Title</h3>
         <p>@Model.Description</p>
         <h5>Director</h5>
         <p>@Model.Director</p>
+        <h5>Release date</h5>
+        <p>@Html.Raw(@Model.ReleaseDate.Date.ToString("yyyy-MM-dd"))</p>
         <h5>Cast</h5>
         <ul>
         @foreach(var actor in @Model.Actors) {
@@ -17,7 +22,7 @@
         </ul>
     </div>
     <div class="col">
-        @if (Model.ImageFile.Length > 0)
+        @if (Model.ImageFile != null)
         {
             <img class="w-25" src="data:image/jpeg;base64,@(Convert.ToBase64String(@Model.ImageFile))">
         }

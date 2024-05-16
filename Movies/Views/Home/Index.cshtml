@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Html
 
-@model IEnumerable<Movies.Models.Movie>
+@model IEnumerable<Movies.Models.MovieDetailsViewModel>
 
 @{
     ViewData["Title"] = "Movie Database";
@@ -33,17 +33,17 @@
 
                             <td class="align-bottom w-25">
                             
-                                @if(item.ImageFile.Count() > 0)
+                                @if(item.ImageFile != null)
                                 {
-                                    <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id"><img class="img-fluid" src="data:image/jpeg;base64,@(Convert.ToBase64String(item.ImageFile))"></a> 
+                                    <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.MovieId"><img class="img-fluid" src="data:image/jpeg;base64,@(Convert.ToBase64String(item.ImageFile))"></a> 
                             }
                             else
                             {
-                                <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id"><img class="img-fluid" src="~/images/no-picture.png"></a>
+                                <a asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.MovieId"><img class="img-fluid" src="~/images/no-picture.png"></a>
                             }
                             
                                 <p>
-                                <h6> <a class="text-decoration-none link-dark" asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.Id">@item.Title</a></h6>
+                                <h6> <a class="text-decoration-none link-dark" asp-controller="Movies" asp-action="MovieInfo" asp-route-id="@item.MovieId">@item.Title</a></h6>
                                 </p>
                              </td>
                             counter++;
